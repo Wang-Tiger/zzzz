@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表格</title>
+</head>
+
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+<script type="text/javascript" src="../js/jquery-easyui-1.5/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.min.js"></script>
+
+<!-- 引入表格的css和js文件 -->
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+<!-- 引入弹框的js文件 -->
+<script type=text/javascript src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+
+<!-- 引入日期得css和js文件 -->
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+
+<!-- 引入上传文件的css和js文件 -->
+<script src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+
+
+<body>
+<table id="myIns"></table>
+</body>
+<script type="text/javascript">
+    $(function(){
+        findAll();
+    })
+
+
+
+
+
+
+    //奖品查询
+    function findAll(){
+        $("#myIns").bootstrapTable({
+            url:'/prize/queryLuck',
+            pagination:true,
+            pageList:[1,2,3,4],//分页组件
+            pageNumber:1,
+            pageSize:2,//默认每页条数
+            sidePagination:'server',//分页方式：client客户端分页，server服务端分页
+            queryParams:function(){
+                return {
+                    page:this.pageNumber,//第几页
+                    rows:this.pageSize
+                };
+            },
+            columns:[
+                {checkbox:true,title:"全选"},//是否显示复选框
+                {field:"id",title:"id"},
+                {field:"name",title:"奖品名称"},
+                {field:"price",title:"奖品价格",
+                    formatter:function (value,row,index) {
+                        return value+"/元"
+                    }
+                },
+                {field:"type",title:"奖品类型",
+                    formatter:function (value, row, index) {
+                        return value == 1?"虚拟奖品":"实体奖品"
+                    }
+                },
+                {field:"pname",title:"奖品名称"},
+                {field:"createtime",title:"领取时间"},
+                {field:"tool",title:"操作",
+                    formatter:function (value,row,index) {
+                        var str = ""
+                        str = "<a href='javascript:up("+row.id+","+row.prizeid+")'>弃奖</a>"
+
+                        return str;
+                    }
+                }
+            ]
+        });
+    }
+    // 弃奖
+    function up(id,prizeid) {
+        $.ajax({
+            url:'/prize/del',
+            type:'post',
+            data:{id:id,prizeid:prizeid},
+            success:function () {
+                bootbox.alert({
+                    size: "small",
+                    title: "提示",
+                    message: "弃奖成功！！",
+                    callback: function(){
+                        $('#myIns').bootstrapTable('refresh');//刷新表格
+                    }
+                });
+            }
+        })
+    }
+
+</script>
+</html>

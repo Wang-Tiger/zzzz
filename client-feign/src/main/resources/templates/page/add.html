@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>表格</title>
+</head>
+
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+<script type="text/javascript" src="../js/jquery-easyui-1.5/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.min.js"></script>
+
+<!-- 引入表格的css和js文件 -->
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+<!-- 引入弹框的js文件 -->
+<script type=text/javascript src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+
+<!-- 引入 datetimepicker -->
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<!-- 引入上传文件的css和js文件 -->
+<script src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+
+<body>
+<form id="fm">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3"><label>名称</label></div>
+            <div class="col-md-4">
+                <input class="form-control" name="name" >
+                <input type="hidden" name="id" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3"><label>价格</label></div>
+            <div class="col-md-4">
+                <input class="form-control" name="price" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3"><label>类型 </label></div>
+            <div class="col-md-4">
+                <input class="form-control" name="type" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3"><label>日期</label></div>
+            <div class="col-md-4">
+                <input class="form-control date" name="createDate" >
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-3">
+                <button type="button" onclick="addPrize()" class="btn btn-warning glyphicon glyphicon-plus">新增</button>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+<script>
+
+    $(function(){
+        $('.date').datetimepicker({
+            language: 'zh-CN',//显示中文
+            //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+            //minView: "day",//设置只显示到月份
+            format: 'yyyy-mm-dd',//显示格式
+            minView: "month",//设置只显示到月份
+            initialDate: new Date(),//初始化当前日期
+            autoclose: true,//选中自动关闭
+            todayBtn: true//显示今日按钮
+        });
+    })
+
+
+
+
+</script>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.FoodDao">
+
+    <!--查询总条数-->
+    <select id="findCount" resultType="int">
+        select count(1) from t_food
+        <include refid="tc"></include>
+    </select>
+
+    <select id="find" resultType="com.jk.entity.FoodEntity">
+        select * from t_food
+        <include refid="tc"></include>
+        limit #{start},#{food.rows}
+    </select>
+
+    <sql id="tc">
+        <where>
+            <if test="food.sdate != null and food.sdate != ''">
+                createDate &gt;= #{food.sdate}
+            </if>
+            <if test="food.edate != null and food.edate != ''">
+                and createDate &lt;= #{food.edate}
+            </if>
+        </where>
+    </sql>
+
+</mapper>

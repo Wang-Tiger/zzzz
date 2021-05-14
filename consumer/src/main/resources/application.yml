@@ -1,0 +1,22 @@
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      #eureka服务地址
+      defaultZone: http://localhost:8080/eureka
+
+spring:
+  application:
+    #应用名称
+    name: consumer
+  #thymeleaf
+  thymeleaf:
+    prefix: classpath:/templates/page/
+    mode: HTML5
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    #生产环境cache为true 开发环境cache为false
+    cache: false

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表格</title>
+</head>
+
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+<script type="text/javascript" src="../js/jquery-easyui-1.5/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.min.js"></script>
+
+<!-- 引入表格的css和js文件 -->
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+<!-- 引入弹框的js文件 -->
+<script type=text/javascript src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+
+<!-- 引入日期得css和js文件 -->
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+
+<!-- 引入上传文件的css和js文件 -->
+<script src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+
+
+<body>
+<div id="toolbar">
+    <div class="form-inline">
+        日期：<input class="form-control date" id="min" >-<input class="form-control date" id="max" >
+        <button type="button" onclick="seeIns()" class="btn btn-warning glyphicon glyphicon-search">搜索</button>
+        <button type="button" onclick="openAdd()" class="btn btn-warning glyphicon glyphicon-plus">新增</button>
+        </select>
+    </div>
+</div>
+<table id="myIns"></table>
+</body>
+<script type="text/javascript">
+    $(function(){
+        findAll();
+        $('.date').datetimepicker({
+            language: 'zh-CN',//显示中文
+            //format: 'yyyy-mm-dd hh:ii:ss',//显示格式
+            //minView: "day",//设置只显示到月份
+            format: 'yyyy-mm-dd',//显示格式
+            minView: "month",//设置只显示到月份
+            initialDate: new Date(),//初始化当前日期
+            autoclose: true,//选中自动关闭
+            todayBtn: true//显示今日按钮
+        });
+    })
+
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,//同步
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+    //新增
+    function  openAdd() {
+        bootbox.dialog({
+            title:'新增商品',
+            message: createAddContent("/page/add"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"foods",
+                            type:'post',
+                            data:$("#fm").serialize(),//表单序列化
+                            success:function(data){
+                                alert("新增成功")
+                                //刷新表格
+                                seeIns()
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+    }
+
+    // 修改
+    function up(id) {
+        bootbox.dialog({
+            title:'新增商品',
+            message: createAddContent("/page/add"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"foods",
+                            type:'post',
+                            data:$("#fm").serialize(),//表单序列化
+                            success:function(data){
+                                alert("修改成功")
+                                //刷新表格
+                                seeIns()
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+        $.ajax({
+            url:"foods/id",
+            type:"get",
+            async:false,
+            data:{id:id},
+            success:function (data) {
+                $("input[name='id']").val(data.id)
+                $("input[name='name']").val(data.name)
+                $("input[name='price']").val(data.price)
+                $("input[name='type']").val(data.type)
+                $("input[name='createDate']").val(data.createDate)
+            }
+
+        })
+    }
+
+    // 条查
+    function seeIns() {
+        $('#myIns').bootstrapTable('refresh');//刷新表格
+    }
+
+
+    //奖品查询
+    function findAll(){
+        $("#myIns").bootstrapTable({
+            toolbar:'#toolbar',
+            url:'foods/find',
+            pagination:true,
+            pageList:[1,2,3,4],//分页组件
+            pageNumber:1,
+            pageSize:2,//默认每页条数
+            sidePagination:'server',//分页方式：client客户端分页，server服务端分页
+            queryParams:function(){
+                return {
+                    page:this.pageNumber,//第几页
+                    rows:this.pageSize,
+                    sdate:$('#min').val(),
+                    edate:$('#max').val()
+                };
+            },
+            columns:[
+                {checkbox:true,title:"全选"},//是否显示复选框
+                {field:"id",title:"id"},
+                {field:"name",title:"名称"},
+                {field:"price",title:"单价"},
+                {field:"type",title:"类型"},
+                {field:"createDate",title:"日期"},
+                {field:"stutas",title:"是否上架",
+                    formatter:function (value,row,index) {
+                        return value == 1?"已上架":"未上架"
+                    }
+                },
+                {field:"tool",title:"操作",
+                    formatter:function (value,row,index) {
+                        var str = ""
+                        str += "<a href='javascript:del("+row.id+")'>删除</a>"
+                        str += "<a href='javascript:up("+row.id+")'>|修改</a>"
+                        return str;
+                    }
+                }
+            ]
+        });
+    }
+    // 续保
+    function del(id) {
+        $.ajax({
+            url:'/foods',
+            type:'delete',
+            data:{id:id},
+            success:function () {
+                bootbox.alert({
+                    size: "small",
+                    title: "提示",
+                    message: "删除成功！！",
+                    callback: function(){
+                        seeIns()
+                    }
+                });
+            }
+        })
+    }
+
+</script>
+</html>

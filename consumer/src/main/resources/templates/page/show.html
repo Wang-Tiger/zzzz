@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表格</title>
+</head>
+
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css">
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap-theme.css">
+<script type="text/javascript" src="../js/jquery-easyui-1.5/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.min.js"></script>
+
+<!-- 引入表格的css和js文件 -->
+<link type="text/css" rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css">
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+<script type=text/javascript src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+
+<!-- 引入弹框的js文件 -->
+<script type=text/javascript src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+
+<!-- 引入日期得css和js文件 -->
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+
+<!-- 引入上传文件的css和js文件 -->
+<script src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+<script src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css">
+
+
+<body>
+<div id="toolbar">
+    <div class="form-inline">
+    奖品名称：<input class="form-control" id="mc" >
+    奖品数量：<input class="form-control" id="min" >-<input class="form-control" id="max" >
+    奖品类型：<select class="form-control" id="ty" >
+                <option value="-1">请选择</option>
+                <option value="1">虚拟奖品</option>
+                <option value="2">实体奖品</option>
+             </select>
+    <button type="button" onclick="seeIns()" class="btn btn-warning glyphicon glyphicon-search">搜索</button>
+    </div>
+</div>
+<table id="myIns"></table>
+</body>
+<script type="text/javascript">
+    $(function(){
+        findAll();
+    })
+
+
+
+    // 条查
+    function seeIns() {
+        $('#myIns').bootstrapTable('refresh');//刷新表格
+    }
+
+
+    //奖品查询
+    function findAll(){
+        $("#myIns").bootstrapTable({
+            toolbar:'#toolbar',
+            url:'/prize/queryPrize',
+            pagination:true,
+            pageList:[1,2,3,4],//分页组件
+            pageNumber:1,
+            pageSize:2,//默认每页条数
+            sidePagination:'server',//分页方式：client客户端分页，server服务端分页
+            queryParams:function(){
+                return {
+                    page:this.pageNumber,//第几页
+                    rows:this.pageSize,
+                    minstock:$('#min').val(),
+                    maxstock:$('#max').val(),
+                    type:$('#ty').val(),
+                    name:$('#mc').val()
+                };
+            },
+            columns:[
+                {checkbox:true,title:"全选"},//是否显示复选框
+                {field:"id",title:"id"},
+                {field:"name",title:"奖品名称"},
+                {field:"price",title:"奖品单价",
+                    formatter:function (value,row,index) {
+                        return value+"/元"
+                    }
+                },
+                {field:"type",title:"奖品类型",
+                    formatter:function (value, row, index) {
+                        return value == 1?"虚拟奖品":"实体奖品"
+                    }
+                },
+                {field:"stock",title:"奖品数量",
+                    formatter:function (value,row,index) {
+                        return value+"个"
+                    }
+                },
+                {field:"img",title:"奖品图"},
+                {field:"tool",title:"操作",
+                    formatter:function (value,row,index) {
+                        var str = ""
+                        if (row.stock == 0){
+                            str = "<a>库存不足</a>"
+                        }else{
+                            str = "<a href='javascript:up("+row.id+")'>领取</a>"
+                        }
+
+                        return str;
+                    }
+                }
+            ]
+        });
+    }
+    // 续保
+    function up(id) {
+        $.ajax({
+          url:'/prize/upById',
+          type:'post',
+          data:{id:id},
+          success:function () {
+              bootbox.alert({
+                  size: "small",
+                  title: "提示",
+                  message: "领取成功！！",
+                  callback: function(){
+                      seeIns()
+                  }
+              });
+          }
+        })
+    }
+
+</script>
+</html>
